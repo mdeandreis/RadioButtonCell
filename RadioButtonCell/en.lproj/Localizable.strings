@@ -1,0 +1,19 @@
+/* 
+  Localizable.strings
+  RadioButtonCell
+
+  Created by Martin on 9/8/17.
+  Copyright © 2017 Martin. All rights reserved.
+*/
+
+
+/* Symptom */
+
+"Abdominalpain" = "Abdominal pain";
+"Bloodinstool" = "Blood in stool";
+"Cough" = "Cough";
+"Diarrhea" = "Diarrhea";
+"Headaches" = "Headaches";
+"Other" = "Other";
+"Symptoms" = "Symptoms";
+"Enter symptom description" = "Enter symptom description";
