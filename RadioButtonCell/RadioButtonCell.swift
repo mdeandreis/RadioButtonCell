@@ -29,7 +29,11 @@ class RadioButtonCell: UITableViewCell {
     
     func setup(symptom: Symptom, isSelected: Bool) {
         optionTitleLabel.text = symptom.description
-        radioImageView.image = isSelected ? symptom.selectedImage : symptom.image
+
+        radioImageView.backgroundColor = isSelected ? UIColor.blue : UIColor.white
+        radioImageView.layer.borderWidth = 2
+        radioImageView.layer.cornerRadius = radioImageView.frame.width / 2
+        radioImageView.layer.borderColor = UIColor.blue.cgColor
         
         optionDescriptionTextField.text = ""
         optionDescriptionTextField.placeholder = "Enter symptom description"

@@ -9,7 +9,7 @@
 import UIKit
 
 fileprivate extension Int {
-    static let rowHeight = 55
+    static let rowHeight = 65
 }
 
 enum Symptom: String {
@@ -20,27 +20,13 @@ enum Symptom: String {
 }
 
 extension Symptom {
-    
-    var image: UIImage {
-        guard let image = UIImage(named: "deselected") else {
-            return UIImage()
-        }
-        return image
-    }
-    
-    var selectedImage: UIImage {
-        guard let selectedImage = UIImage(named: "selected") else {
-            return UIImage()
-        }
-        return selectedImage
-    }
-    
+   
     var hasInputField: Bool {
         switch self {
         case .other:
-            return true
-        default:
             return false
+        default:
+            return true
         }
     }
 }
@@ -49,7 +35,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     var allSymptoms: [Symptom] = Symptom.allSymptoms
-    var selectedOption: (symptom: Symptom?, index: Int) = (nil, -1)
+    var selectedOptions: [(symptom: Symptom?, index: Int)] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,11 +101,20 @@ extension ViewController: UITableViewDataSource {
         let radioButtonCell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! RadioButtonCell
         //get the current symptom
         let symptom = allSymptoms[indexPath.row]
-        if selectedOption.symptom == nil {
+        if selectedOptions.count == 0 {
             radioButtonCell.setup(symptom: symptom, isSelected: false)
         }else {
-            radioButtonCell.setup(symptom: symptom, isSelected: indexPath.row == selectedOption.index)
+            let symptoms = selectedOptions.filter { (option: (symptom: Symptom?, index: Int)) -> Bool in
+                option.symptom == symptom
+            }
+            
+            if symptoms.count == 0 {
+                radioButtonCell.setup(symptom: symptom, isSelected: false)
+            }else {
+                radioButtonCell.setup(symptom: symptom, isSelected: indexPath.row == symptoms[0].index)
+            }
         }
+        
         radioButtonCell.delegate = self
         radioButtonCell.selectionStyle = .none
         
@@ -131,12 +126,23 @@ extension ViewController: UITableViewDataSource {
 extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let symptom = allSymptoms[indexPath.row]
-        //get the current symptom and update the selected option
-        if let lastSelectedSymptom = selectedOption.symptom {
-            selectedOption = symptom == lastSelectedSymptom ? (nil, -1) : (symptom, indexPath.row)
+        let selectedSymptom = allSymptoms[indexPath.row]
+        //get the selected symptom and update the selected options
+        let symptoms = selectedOptions.filter { (option: (symptom: Symptom?, index: Int)) -> Bool in
+            option.symptom == selectedSymptom
+        }
+        
+        if symptoms.count == 0 {
+            selectedOptions.append((selectedSymptom, indexPath.row))
         }else {
-            selectedOption = (symptom, indexPath.row)
+            //check if the selected symptom was already selected. If so, remove from selected options
+            if selectedSymptom == symptoms[0].symptom {
+                selectedOptions = selectedOptions.filter({ (option:(symptom: Symptom?, index: Int)) -> Bool in
+                    option.symptom != selectedSymptom
+                })
+            }else {
+                selectedOptions.append((selectedSymptom, indexPath.row))
+            }
         }
         tableView.reloadData()
     }
